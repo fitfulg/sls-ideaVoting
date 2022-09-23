@@ -2,28 +2,22 @@ import type { AWS } from '@serverless/typescript';
 
 import functions from './serverless/functions';
 import DynamoResources from './serverless/dynamodb';
-import AssetsBucketAndCloudfront from './serverless/AssetsBucketAndCloudfront';
-import CognitoResources from './serverless/cognitoResources';
 
 const serverlessConfiguration: AWS = {
   service: 'ideaVoting',
   frameworkVersion: '3',
 
-  plugins: ['serverless-esbuild', 'serverless-offline', 'serverless-dynamodb-local'],
+  plugins: ['serverless-esbuild'],
   custom: {
     tables: {
       singleTable: '${sls:stage}-${self:service}-single-table',
     },
     profile: {
-      dev: 'dev-profile',
+      dev: 'serverlesUser',
       int: 'int-profile',
       prod: 'prod-profile',
     },
-    clientOrigins: {
-      dev: 'https://dev.flights.com',
-      int: 'https://int.flights.com',
-      prod: 'https://prod.flights.com',
-    },
+
     assetBucketName: '${sls:stage}-${self:service}-s3-assets',
 
     esbuild: {
@@ -36,31 +30,12 @@ const serverlessConfiguration: AWS = {
       platform: 'node',
       concurrency: 10,
     },
-    dynamodb: {
-      stages: ['dev'],
-      start: {
-        port: 8005,
-        inMemory: true,
-        migrate: true,
-        seed: true,
-      },
-      seed: {
-        dev: {
-          sources: [
-            {
-              table: '${self:custom.tables.singleTable}',
-              sources: ['serverless/seedData/flights.json'],
-            },
-          ],
-        },
-      },
-    },
   },
   provider: {
     name: 'aws',
     runtime: 'nodejs16.x',
     profile: '${self:custom.profile.${sls:stage}}',
-    region: 'eu-central-1',
+    region: 'us-east-1',
     apiGateway: {
       minimumCompressionSize: 1024,
       shouldStartNameWithService: true,
@@ -86,20 +61,12 @@ const serverlessConfiguration: AWS = {
   resources: {
     Resources: {
       ...DynamoResources,
-      ...AssetsBucketAndCloudfront,
-      ...CognitoResources,
     },
     Outputs: {
       DynamoTableName: {
         Value: '${self:custom.tables.singleTable}',
         Export: {
           Name: 'DynamoTableName',
-        },
-      },
-      UserPoolId: {
-        Value: { Ref: 'CognitoUserPool' },
-        Export: {
-          Name: 'UserPoolId',
         },
       },
     },
