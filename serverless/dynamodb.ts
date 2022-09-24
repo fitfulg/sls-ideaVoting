@@ -1,4 +1,19 @@
 import type { AWS } from '@serverless/typescript';
+/*
+IDEAS  
+PK       SK 
+BoardID  IdeaID
+
+VOTE
+PK       SK
+IdeaID   UserID
+
+Single table design:
+ID   PK        SK     Title   BoardName   UserID
+ABC  Idea#123  (date) title
+123  Board     (date)         boardName
+id   Vote#ABC  (date)                     userID
+*/
 
 const DynamoResources: AWS['resources']['Resources'] = {
   ideasTable: {

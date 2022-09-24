@@ -34,7 +34,7 @@ const serverlessConfiguration: AWS = {
   provider: {
     name: 'aws',
     runtime: 'nodejs16.x',
-    profile: '${self:custom.profile.${sls:stage}}',
+    // profile: '${self:custom.profile.${sls:stage}}',
     region: 'us-east-1',
     apiGateway: {
       minimumCompressionSize: 1024,
@@ -50,8 +50,8 @@ const serverlessConfiguration: AWS = {
         Effect: 'Allow',
         Action: 'dynamodb:*',
         Resource: [
-          'arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.tables.singleTable}',
-          'arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.tables.singleTable}/index/index1',
+          'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.tables.singleTable}',
+          'arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.tables.singleTable}/index/index1',
         ],
       },
     ],
