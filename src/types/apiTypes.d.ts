@@ -3,3 +3,9 @@ export type CreateBoardBody = {
   description?: string;
   isPublic?: boolean;
 };
+
+export type CreateIdeaBody = {
+  title: string;
+  description?: string;
+  boardId: string;
+};
