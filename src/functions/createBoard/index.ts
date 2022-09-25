@@ -1,11 +1,9 @@
-//uuid
-import { v4 as uuid } from 'uuid';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { formatJSONResponse } from '@libs/APIResponses';
 import Dynamo from '@libs/Dynamo';
-import { validateBody } from 'src/utils';
 import { CreateBoardBody } from 'src/types/apiTypes';
 import { BoardRecord } from 'src/types/dynamo';
+import { v4 as uuid } from 'uuid';
 import { getUserId } from '@libs/APIGateway';
 
 export const handler = async (event: APIGatewayProxyEvent) => {
@@ -14,7 +12,9 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     const tableName = process.env.singleTable;
 
     const validationError = validateBody(body);
-    if (validationError) return validationError;
+    if (validationError) {
+      return validationError;
+    }
 
     const { name, description, isPublic = false } = body as CreateBoardBody;
 
@@ -32,8 +32,18 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     await Dynamo.write({ data, tableName });
 
-    return formatJSONResponse({ body: { message: 'Board created' } });
+    return formatJSONResponse({ body: { message: 'Board Created', id: data.id } });
   } catch (error) {
     return formatJSONResponse({ statusCode: 500, body: error.message });
   }
+};
+
+const validateBody = (body: Record<string, any>) => {
+  if (!body.name) {
+    return formatJSONResponse({
+      body: { message: '"name" required on body' },
+      statusCode: 400,
+    });
+  }
+  return;
 };

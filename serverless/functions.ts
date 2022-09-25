@@ -20,7 +20,6 @@ const functions: AWS['functions'] = {
         http: {
           method: 'post',
           path: '/boards',
-          // authorizer,
         },
       },
     ],
@@ -32,7 +31,17 @@ const functions: AWS['functions'] = {
         http: {
           method: 'get',
           path: '/boards',
-          // authorizer,
+        },
+      },
+    ],
+  },
+  getBoard: {
+    handler: 'src/functions/getBoard/index.handler',
+    events: [
+      {
+        http: {
+          method: 'get',
+          path: '/boards/{boardId}',
         },
       },
     ],

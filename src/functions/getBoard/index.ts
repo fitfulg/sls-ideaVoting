@@ -1,23 +1,28 @@
 import { formatJSONResponse } from '@libs/APIResponses';
 import Dynamo from '@libs/Dynamo';
-import { APIGatewayProxyEvent } from 'aws-lambda';
 import { BoardRecord } from 'src/types/dynamo';
+import { APIGatewayProxyEvent } from 'aws-lambda';
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
     const tableName = process.env.singleTable;
 
-    const boards = await Dynamo.query<BoardRecord>({
+    const boardId = event.pathParameters!.boardId;
+
+    //get the boards
+    const board = await Dynamo.get<BoardRecord>({
       tableName,
-      index: 'index1',
-      pkKey: 'pk',
-      pkValue: 'board',
-      limit: 10,
+      pkValue: boardId,
     });
 
-    const responseData = boards
-      .map(({ pk, sk, ...rest }) => rest)
-      .filter((board) => board.isPublic);
+    if (!board.id) {
+      return formatJSONResponse({
+        statusCode: 404,
+        body: { message: 'Board not found' },
+      });
+    }
+
+    const { pk, sk, ...responseData } = board;
 
     return formatJSONResponse({ body: responseData });
   } catch (error) {
