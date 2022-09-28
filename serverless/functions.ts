@@ -57,6 +57,17 @@ const functions: AWS['functions'] = {
       },
     ],
   },
+  voteOnIdea: {
+    handler: 'src/functions/voteOnIdea/index.handler',
+    events: [
+      {
+        http: {
+          method: 'post',
+          path: '/ideas/{ideaId}',
+        },
+      },
+    ],
+  },
 };
 
 export default functions;

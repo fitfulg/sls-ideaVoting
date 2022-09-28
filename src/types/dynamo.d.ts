@@ -20,3 +20,12 @@ export type IdeaRecord = {
   description?: string;
   date: number;
 };
+
+export type VoteRecord = {
+  id: string;
+  pk: string;
+  sk: string;
+
+  userId: string;
+  ideaId: string;
+};
