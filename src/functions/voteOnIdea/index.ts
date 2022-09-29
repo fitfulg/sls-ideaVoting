@@ -10,7 +10,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     const tableName = process.env.singleTable;
     const { ideaId } = event.pathParameters;
     const userId = getUserId(event);
-    const existingVote = await Dynamo.query({
+    const existingVote = await Dynamo.query<VoteRecord>({
       tableName,
       index: 'index1',
       pkKey: 'pk',
@@ -20,7 +20,10 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     });
 
     if (existingVote.length !== 0) {
-      return formatJSONResponse({ statusCode: 400, body: 'Already voted for this idea' });
+      return formatJSONResponse({
+        statusCode: 400,
+        body: { message: 'Already voted for this idea' },
+      });
     }
 
     const data: VoteRecord = {

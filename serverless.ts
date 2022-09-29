@@ -2,6 +2,7 @@ import type { AWS } from '@serverless/typescript';
 
 import functions from './serverless/functions';
 import DynamoResources from './serverless/dynamodb';
+import cognitoResources from './serverless/cognito';
 
 const serverlessConfiguration: AWS = {
   service: 'ideaVoting',
@@ -17,8 +18,6 @@ const serverlessConfiguration: AWS = {
       int: 'int-profile',
       prod: 'prod-profile',
     },
-
-    assetBucketName: '${sls:stage}-${self:service}-s3-assets',
 
     esbuild: {
       bundle: true,
@@ -43,7 +42,6 @@ const serverlessConfiguration: AWS = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
       singleTable: '${self:custom.tables.singleTable}',
-      region: '${self:provider.region}',
     },
     iamRoleStatements: [
       {
@@ -61,12 +59,21 @@ const serverlessConfiguration: AWS = {
   resources: {
     Resources: {
       ...DynamoResources,
+      ...cognitoResources,
     },
     Outputs: {
       DynamoTableName: {
         Value: '${self:custom.tables.singleTable}',
         Export: {
           Name: 'DynamoTableName',
+        },
+      },
+      CognitoUserPoolId: {
+        Value: {
+          Ref: 'CognitoUserPool',
+        },
+        Export: {
+          Name: '${sls:stage}-${self:service}-user-pool-id',
         },
       },
     },
